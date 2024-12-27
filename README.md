@@ -1,5 +1,47 @@
 # banking_etl
 
+Here’s a **linkage table** where each output column is mapped to its corresponding input (source) column(s), along with the transformation logic required to derive it:
+
+| **Output Column**                      | **Source Column(s)**                              | **Transformation Logic**                                                                                                                                                                                                                                     |
+|----------------------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `uen`                                  | `uen`                                            | Direct mapping (unique identifier for customers).                                                                                                                                                                                                           |
+| `rpt_prd_end_dt`                       | `rpt_prd_end_dt`                                 | Direct mapping (report period end date).                                                                                                                                                                                                                    |
+| `dep_bal_curr_usd`                     | `deposit_balance`, `currency`, `conversion_rate_to_usd` | If `currency` is USD, use `deposit_balance`; otherwise, multiply by `conversion_rate_to_usd`.                                                                                                                                                              |
+| `dep_bal_curr_cad`                     | `deposit_balance`, `currency`, `conversion_rate_to_cad` | If `currency` is CAD, use `deposit_balance`; otherwise, divide by `conversion_rate_to_cad`.                                                                                                                                                                |
+| `dep_bal_prev_usd`                     | `prev_deposit_balance_usd`                       | Direct mapping (previous year’s deposit balance in USD).                                                                                                                                                                                                   |
+| `dep_bal_prev_cad`                     | `prev_deposit_balance_cad`                       | Direct mapping (previous year’s deposit balance in CAD).                                                                                                                                                                                                   |
+| `dep_bal_yoy_change_usd`               | `dep_bal_curr_usd`, `dep_bal_prev_usd`           | \[((`dep_bal_curr_usd` - `dep_bal_prev_usd`) / `dep_bal_prev_usd`) * 100\] to calculate percentage change in USD.                                                                                                                                           |
+| `dep_bal_yoy_change_cad`               | `dep_bal_curr_cad`, `dep_bal_prev_cad`           | \[((`dep_bal_curr_cad` - `dep_bal_prev_cad`) / `dep_bal_prev_cad`) * 100\] to calculate percentage change in CAD.                                                                                                                                           |
+| `crd_bal_curr_usd`                     | `credit_balance`, `currency`, `conversion_rate_to_usd` | If `currency` is USD, use `credit_balance`; otherwise, multiply by `conversion_rate_to_usd`.                                                                                                                                                               |
+| `crd_bal_curr_cad`                     | `credit_balance`, `currency`, `conversion_rate_to_cad` | If `currency` is CAD, use `credit_balance`; otherwise, divide by `conversion_rate_to_cad`.                                                                                                                                                                 |
+| `crd_bal_prev_usd`                     | `prev_credit_balance_usd`                        | Direct mapping (previous year’s credit balance in USD).                                                                                                                                                                                                    |
+| `crd_bal_prev_cad`                     | `prev_credit_balance_cad`                        | Direct mapping (previous year’s credit balance in CAD).                                                                                                                                                                                                    |
+| `crd_bal_yoy_change_usd`               | `crd_bal_curr_usd`, `crd_bal_prev_usd`           | \[((`crd_bal_curr_usd` - `crd_bal_prev_usd`) / `crd_bal_prev_usd`) * 100\] to calculate percentage change in USD.                                                                                                                                           |
+| `crd_bal_yoy_change_cad`               | `crd_bal_curr_cad`, `crd_bal_prev_cad`           | \[((`crd_bal_curr_cad` - `crd_bal_prev_cad`) / `crd_bal_prev_cad`) * 100\] to calculate percentage change in CAD.                                                                                                                                           |
+| `inc_txn_vol_curr_usd`                 | `incoming_txn_usd`                               | Sum of all incoming transaction amounts in USD.                                                                                                                                                                                                            |
+| `inc_txn_vol_curr_cad`                 | `incoming_txn_cad`                               | Sum of all incoming transaction amounts in CAD.                                                                                                                                                                                                            |
+| `inc_txn_vol_prev_usd`                 | `prev_incoming_txn_usd`                          | Direct mapping (previous year’s transaction volume in USD).                                                                                                                                                                                                |
+| `inc_txn_vol_prev_cad`                 | `prev_incoming_txn_cad`                          | Direct mapping (previous year’s transaction volume in CAD).                                                                                                                                                                                                |
+| `inc_txn_vol_yoy_change_usd`           | `inc_txn_vol_curr_usd`, `inc_txn_vol_prev_usd`   | \[((`inc_txn_vol_curr_usd` - `inc_txn_vol_prev_usd`) / `inc_txn_vol_prev_usd`) * 100\] to calculate percentage change in USD.                                                                                                                               |
+| `inc_txn_vol_yoy_change_cad`           | `inc_txn_vol_curr_cad`, `inc_txn_vol_prev_cad`   | \[((`inc_txn_vol_curr_cad` - `inc_txn_vol_prev_cad`) / `inc_txn_vol_prev_cad`) * 100\] to calculate percentage change in CAD.                                                                                                                               |
+| `prod_cnt`                             | `current_products`                               | Count the number of products in `current_products` (assuming it is a comma-separated list).                                                                                                                                                                |
+| `prod_pen`                             | `prod_cnt`, `total_possible_products`            | \[(`prod_cnt` / `total_possible_products`)\] to calculate product penetration.                                                                                                                                                                             |
+
+---
+
+### Key Notes:
+1. **Assumptions:**
+   - `conversion_rate_to_usd` and `conversion_rate_to_cad` exist in the input schema for currency conversion.
+   - `prev_*` columns (e.g., `prev_deposit_balance_usd`, `prev_credit_balance_usd`) exist for previous year data.
+   - `current_products` is a comma-separated string.
+
+2. **Clarifications Still Needed:**
+   - Are conversion rates constant or variable per row?
+   - Are there any specific filters or rules for aggregations (e.g., for `inc_txn_vol_curr_usd`)?
+
+If anything seems unclear or incorrect, let me know, and I’ll refine the table further!
+
+
 Let me carefully list all the source columns from the **input schema image** and cross-verify that I only used columns actually present in the input dataset in my mapping table:
 
 ---
