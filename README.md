@@ -1,5 +1,39 @@
 # banking_etl
 
+
+
+From the input schema, I see the dataset has a mix of columns with various data types, including `date`, `double`, `bigint`, `string`, and `tinyint`. Here’s a high-level understanding based on column names and data types:
+
+1. **Identifiers:**
+   - Columns like `apms_cstmr_id`, `uen`, `acct_num`, `acct_id`, and `ref1_cd` seem to represent unique identifiers for accounts, customers, or references.
+   - Columns such as `prod_id`, `fcy_id`, and `loan_alias` might indicate foreign keys or identifiers for related entities like products or loans.
+
+2. **Date and Time Columns:**
+   - Columns like `rpt_prd_end_dt`, `ac_open_dt`, `maturity_dt`, and `com_start_dt` likely represent different timestamps related to reporting periods, account opening, or contract start/end dates.
+   - These columns may require transformations like filtering by date ranges, calculating durations, or handling missing dates.
+
+3. **Product and Account Details:**
+   - Columns such as `prod_cd`, `prod_nm`, `priority`, and `rsk_tp_prod_cd` seem to describe product and account attributes, including names, risk types, or priority levels.
+
+4. **Financial Metrics:**
+   - Columns like `tsys_corp_limit`, `original_auth_amt`, `balance`, and `int_rate_tp` likely contain numeric financial data such as credit limits, loan balances, and interest rates.
+   - These might involve aggregations, calculations, or filtering for analysis.
+
+5. **Risk and Compliance:**
+   - Columns like `rsk_tp_prod_cd`, `rsk_tp_prod_nm`, and `src_bmo_resp_node_hrs_dept_id` likely relate to risk or compliance metrics, potentially requiring additional mappings or validations.
+
+6. **Categorical or Flag Columns:**
+   - Columns such as `rlvr_ind`, `pnp_sign_ind_reco_ind`, and `rdm_ind_mech` appear to be flags or categorical variables that may need transformations (e.g., binary encoding, mapping).
+
+7. **Nested or Hierarchical Data:**
+   - Columns like `lvl1_prod_dsc`, `lvl2_prod_dsc`, and `lvl3_prod_dsc` might represent hierarchical information about product or service categories.
+
+This schema indicates a dataset rich in hierarchical, temporal, and financial information, which likely supports analyses like customer segmentation, risk modeling, or financial reporting. 
+
+Let me know if I missed any specifics or if you want me to focus on any particular group of columns!
+
+
+
 Here’s a **linkage table** where each output column is mapped to its corresponding input (source) column(s), along with the transformation logic required to derive it:
 
 | **Output Column**                      | **Source Column(s)**                              | **Transformation Logic**                                                                                                                                                                                                                                     |
