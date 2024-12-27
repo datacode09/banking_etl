@@ -1,5 +1,120 @@
 # banking_etl
 
+Let me carefully list all the source columns from the **input schema image** and cross-verify that I only used columns actually present in the input dataset in my mapping table:
+
+---
+
+### **Source Columns from the Input Schema**
+Here’s the full list of columns as per the schema image provided:
+
+1. `rpt_prd_end_dt`  
+2. `apms_cstmr_id`  
+3. `uen`  
+4. `src_stm_cd`  
+5. `acct_num`  
+6. `acct_id`  
+7. `priority`  
+8. `ref1_cd`  
+9. `ref2_cd`  
+10. `loan_alias`  
+11. `ac_open_dt`  
+12. `ac_tp_cd`  
+13. `int_rate_tp`  
+14. `src_trnst_nbr`  
+15. `src_bmo_resp_node_hrs_dept_id`  
+16. `ac_maturity_dt`  
+17. `tsys_corp_limit`  
+18. `rsk_tp_prod_tp_cd`  
+19. `ac_nbr_nadb`  
+20. `rsk_tp_id`  
+21. `rsk_tp_prod_cd`  
+22. `rsk_tp_prod_nm`  
+23. `fcy_id`  
+24. `prod_id`  
+25. `prod_cd`  
+26. `prod_nm`  
+27. `fcy_purpose`  
+28. `comc_fcy_id`  
+29. `comc_app_no`  
+30. `comc_fcy_prod_cd`  
+31. `comc_prod_nm`  
+32. `ccy`  
+33. `fcy_open_dt`  
+34. `com_start_dt`  
+35. `maturity_dt`  
+36. `facrid`  
+37. `original_auth_amt`  
+38. `maturity_dt_ind`  
+39. `rlvr_ind`  
+40. `amortizing_ind`  
+41. `amortization_end_loan_months`  
+42. `fcy_rsk_tp_id`  
+43. `bank_approved_dt`  
+44. `cust_acceptance_dt`  
+45. `cad_acct_id`  
+46. `cold_id`  
+47. `src_stm_rtn_cd`  
+48. `dep_src_ac_nbr_apms`  
+49. `pers_comm_cd_mech`  
+50. `lvl1_prod_dsc`  
+51. `lvl2_prod_dsc`  
+52. `lvl3_prod_dsc`  
+53. `lvl4_prod_dsc`  
+54. `balance`  
+55. `prod_tp`  
+56. `privt_bank_ind`  
+57. `pnp_sign_ind_reco_ind`  
+58. `rdm_ind_mech`  
+59. `renew_ind_mech`  
+60. `new_ind_ips`  
+61. `txn_nbr`  
+62. `put_alt_rsn_cd`  
+63. `rvlvr_ind`  
+64. `txn_vol`
+
+---
+
+### **Cross-Verification of Output Mappings**
+
+Let’s cross-check if I used **any column that does not exist in the source schema**:
+
+#### Columns Used in the Mapping Table:
+1. `uen` → ✅ Exists (source identifier for customers).
+2. `rpt_prd_end_dt` → ✅ Exists (reporting period).
+3. `deposit_balance` → **NOT FOUND** in source schema.
+4. `credit_balance` → **NOT FOUND** in source schema.
+5. `currency` → **NOT FOUND** in source schema.
+6. `conversion_rate_to_usd` → **NOT FOUND** in source schema.
+7. `conversion_rate_to_cad` → **NOT FOUND** in source schema.
+8. `prev_deposit_balance_usd` → **NOT FOUND** in source schema.
+9. `prev_deposit_balance_cad` → **NOT FOUND** in source schema.
+10. `prev_credit_balance_usd` → **NOT FOUND** in source schema.
+11. `prev_credit_balance_cad` → **NOT FOUND** in source schema.
+12. `incoming_txn_usd` → **NOT FOUND** in source schema.
+13. `incoming_txn_cad` → **NOT FOUND** in source schema.
+14. `current_products` → **NOT FOUND** in source schema.
+15. `total_possible_products` → **NOT FOUND** in source schema.
+
+---
+
+### **Findings**
+
+Upon review, I see several columns used in my previous mapping (e.g., `deposit_balance`, `credit_balance`, `currency`, etc.) **do not exist** in the input schema provided. These columns appear to have been **hallucinated** based on inferred logic.
+
+---
+
+### **Next Steps**
+
+1. **Clarify missing columns**:
+   - Are there additional datasets or external sources that provide these values (e.g., `currency`, `conversion_rate_to_usd`, etc.)?
+   - If not, can we derive these metrics from existing columns in the source schema?
+
+2. **Adjust mappings**:
+   - I will rework the linkage table and recipe based on the actual source schema columns.
+
+Let me know how you’d like to proceed! If you can clarify the source for missing data points, I’ll update the recipe accordingly.
+
+
 Based on the actual source schema provided, I will now refine the linkage table and ensure it aligns with the **existing columns**. This revised table avoids any assumptions about non-existent fields and clearly maps each output column to its source columns or logic.
 
 ---
