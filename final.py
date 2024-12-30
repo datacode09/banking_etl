@@ -34,7 +34,7 @@ current_balances = all_uens.join(current_balances, on="uen", how="left").fillna(
     "curr_crd_bal_cad": 0
 }).withColumn(
     "curr_bal_data_availability_indicator",
-    F.when(current_df.count() > 0, 1).otherwise(0)
+    F.when(F.col("curr_dep_bal_usd") != 0, 1).otherwise(0)
 )
 
 # Step 3: Calculate rolling 12-month balances with default handling
@@ -58,7 +58,7 @@ rolling_balances = all_uens.join(rolling_balances, on="uen", how="left").fillna(
     "prev_crd_bal_cad": 0
 }).withColumn(
     "rolling_bal_data_availability_indicator",
-    F.when(rolling_df.count() > 0, 1).otherwise(0)
+    F.when(F.col("prev_dep_bal_usd") != 0, 1).otherwise(0)
 )
 
 # Step 4: Calculate product lists with default handling
@@ -75,7 +75,7 @@ product_lists = all_uens.join(product_lists, on="uen", how="left").fillna({
     "prd_prev": []
 }).withColumn(
     "product_list_data_availability_indicator",
-    F.when(product_lists.count() > 0, 1).otherwise(0)
+    F.when(F.size(F.col("prd_curr")) > 0, 1).otherwise(0)
 )
 
 # Step 5: Combine all metrics into a single DataFrame
