@@ -34,7 +34,7 @@ current_balances = all_uens.join(current_balances, on="uen", how="left").fillna(
     "curr_crd_bal_cad": 0
 }).withColumn(
     "curr_bal_data_availability_indicator",
-    F.when(F.col("curr_dep_bal_usd") != 0, 1).otherwise(0)
+    F.when(F.col("curr_dep_bal_usd") + F.col("curr_crd_bal_usd") > 0, 1).otherwise(0)
 )
 
 # Step 3: Calculate rolling 12-month balances with default handling
@@ -58,7 +58,7 @@ rolling_balances = all_uens.join(rolling_balances, on="uen", how="left").fillna(
     "prev_crd_bal_cad": 0
 }).withColumn(
     "rolling_bal_data_availability_indicator",
-    F.when(F.col("prev_dep_bal_usd") != 0, 1).otherwise(0)
+    F.when(F.col("prev_dep_bal_usd") + F.col("prev_crd_bal_usd") > 0, 1).otherwise(0)
 )
 
 # Step 4: Calculate product lists with default handling
@@ -70,10 +70,11 @@ product_lists = (
                              (F.col("rpt_prd_end_dt") < F.lit(current_month)), F.col("prod_nm"))).alias("prd_prev")
     )
 )
-product_lists = all_uens.join(product_lists, on="uen", how="left").fillna({
-    "prd_curr": [],
-    "prd_prev": []
-}).withColumn(
+product_lists = all_uens.join(product_lists, on="uen", how="left").withColumn(
+    "prd_curr", F.when(F.col("prd_curr").isNotNull(), F.col("prd_curr")).otherwise(F.array())
+).withColumn(
+    "prd_prev", F.when(F.col("prd_prev").isNotNull(), F.col("prd_prev")).otherwise(F.array())
+).withColumn(
     "product_list_data_availability_indicator",
     F.when(F.size(F.col("prd_curr")) > 0, 1).otherwise(0)
 )
